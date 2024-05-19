@@ -1,0 +1,250 @@
+body {
+    background-color: #f7f7f7;
+    font-family: "Quicksand", sans-serif;
+    font-optical-sizing: auto;
+    text-align: center;
+    color: #333;
+}
+
+.container {
+    width: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
+h2 {
+    font-family: "Oswald", sans-serif;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+
+.weather-section {
+    margin: 10px 0;
+    background-color: #fff;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+#location {
+    font-weight: 200;
+    font-size: 1.8rem;
+}
+
+#temperature {
+    font-weight: 200;
+    font-size: 2.6rem; /* Slightly smaller for mobile */
+}
+
+#weather-description img {
+    width: 120px; /* Smaller size for mobile */
+    height: auto;
+}
+
+#current-weather p,
+#search-weather input,
+#search-weather button,
+#search-weather select,
+#search-weather p {
+    margin: 10px 0;
+    text-align: center;
+}
+
+#search-weather button {
+    width: 100%;
+    color: #ffffff;
+}
+
+#weather-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* This ensures vertical centering of all items in the flex container */
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+#weather-info p:nth-last-child(-n+3) {
+    text-align: center;
+    margin: 0 auto;
+}
+
+#sun-times {
+    display: flex;
+    justify-content: space-between;
+    font-family: "Oswald", sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+#sunrise i,
+#sunset i {
+    margin-right: 5px;
+    font-size: 1.2rem;
+}
+
+
+#hourly-cards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 200;
+}
+
+#icon-card {
+    width: 90px;
+    height: auto;
+}
+
+#hourly-forecast-cards {
+    text-align: center;
+    font-family: "Oswald", sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+#hourly-forecast-cards .row {
+    margin-left: -2px;
+    margin-right: -2px;
+}
+
+#hourly-forecast-cards .col {
+    padding: 0 3px;
+}
+
+#temp-card {
+    font-weight: 400;
+    font-size: 1.5rem;
+}
+
+.table {
+    margin-top: 20px;
+    background-color: #ffffff !important;
+}
+
+.table caption {
+    text-align: center;
+}
+
+.table tbody tr {
+    cursor: pointer;
+    background-color: #ffffff !important;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1 !important;
+}
+
+.table tbody tr.details {
+    background-color: #fdfdfd !important;
+}
+
+.table tbody tr.details p {
+    margin: 5px 0;
+}
+
+.details td {
+    border-top: none;
+}
+
+.table th {
+    text-align: center;
+    font-family: "Oswald", sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    vertical-align: middle;
+    border-color: #ddd !important;
+}
+
+.table td {
+    text-align: center;
+    font-family: "Oswald", sans-serif;
+    font-size: 1rem;
+    font-weight: 200;
+    vertical-align: middle;
+    border-color: #ddd !important;
+}
+
+#hourly-forecast, #daily-forecast {
+    margin-top: 20px;
+}
+
+.weather-icon {
+    width: 40px;
+    height: 40px;
+}
+
+#weather-description {
+    font-size: 1.5rem;
+}
+
+/* Media Queries for Larger Devices */
+@media (min-width: 576px) {
+    #temperature {
+        font-size: 3rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 700px;
+        padding: 20px;
+    }
+
+    .weather-section {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    #temperature {
+        font-size: 3.2rem;
+    }
+
+    #weather-description img {
+        width: 120px;
+    }
+
+    #temp-card {
+        font-size: 1.2rem;
+    }
+
+    #icon-card {
+        width: 60px;
+        height: auto;
+    }
+
+    .table thead {
+        font-size: 1.1rem;
+    }
+
+    #hourly-forecast, #daily-forecast {
+        margin-top: 30px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width: 800px;
+    }
+
+    #temperature {
+        font-size: 3.4rem;
+    }
+
+    #weather-description img {
+        width: 140px;
+    }
+
+    .table thead {
+        font-size: 1.2rem;
+    }
+
+    #hourly-forecast, #daily-forecast {
+        margin-top: 40px;
+    }
+}
