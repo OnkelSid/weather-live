@@ -5,7 +5,7 @@ exports.handler = async (event, context) => {
 
   let url = '';
   const googleApiKey = process.env.GOOGLE_API_KEY;
-  
+
   if (type === 'coordinates') {
     url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(query)}&key=${googleApiKey}&components=country:NO`;
   } else if (type === 'reverseGeocode') {
@@ -22,7 +22,9 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'BullsApp/0.1 preben@bulls.no' }
+    });
     const data = await response.json();
     return {
       statusCode: 200,
