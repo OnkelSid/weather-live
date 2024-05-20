@@ -1,15 +1,14 @@
 {
   "name": "weather-live",
   "version": "1.0.0",
-  "description": "Weather app using met.no as source",
-  "main": "script.js",
+  "description": "A brief description of your project",
   "dependencies": {
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node script.js"
+    "start": "node index.js"
   },
-  "author": "OnkelSid",
+  "author": "Your Name",
   "license": "MIT"
 }
