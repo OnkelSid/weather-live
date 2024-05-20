@@ -44,8 +44,6 @@ function getCoordinates(city) {
         .catch(error => console.error('Error fetching location coordinates:', error));
 }
 
-// Other functions remain the same as previously provided
-
 
 
 function updateUIForNoData(cityName) {
