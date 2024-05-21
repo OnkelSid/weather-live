@@ -101,6 +101,16 @@ function reverseGeocode(lat, lon) {
 
 
 
+// iframe script
+window.addEventListener('message', event => {
+    if (event.origin !== 'your-parent-domain') return;
+  
+    const { lat, lon } = event.data;
+    initializeWeather(lat, lon);
+  });
+
+
+
 function initializeWeather(lat, lon) {
     getWeatherData(lat, lon);
     updateHourlyForecastCards(lat, lon);
