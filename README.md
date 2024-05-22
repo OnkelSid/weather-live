@@ -1,6 +1,8 @@
 # weather-live
 Værmelding
 
+######
+
 iframe code:
 
 <iframe id="weather-iframe" src="https://weather-live-no.netlify.app/" width="720" height="1400" allow="geolocation"></iframe>
@@ -21,3 +23,7 @@ iframe code:
       }
     });
   </script>
+
+#####
+
+  Husk å endre fra Midnattsol til mørketid.
