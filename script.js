@@ -93,7 +93,10 @@ function reverseGeocode(lat, lon) {
                         comp.types.includes('political')
                     );
                     cityName = cityName ? formatCityName(cityName.long_name) : formatCityName(cityInfo.formatted_address);
+
+                    console.log('Before translation:', cityName);
                     cityName = translateToNorwegian(cityName);
+                    console.log('After translation:', cityName);
                 } else {
                     cityName = 'Unknown location';
                 }
