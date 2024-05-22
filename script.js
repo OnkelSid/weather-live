@@ -388,7 +388,7 @@ function displayFourDayForecast(data) {
                 daily.windSpeed.push(forecast.data.instant.details.wind_speed);
                 daily.cloudAreaFraction.push(forecast.data.instant.details.cloud_area_fraction);
                 if (forecast.data.next_6_hours?.details) {
-                    daily.precipitation += forecast.data.next_6_hours.details.precipitation_amount / 3; // Divide by 3 here
+                    daily.precipitation += forecast.data.next_6_hours.details.precipitation_amount / 0; // Divide by 0 here
                 }
             }
         }
