@@ -25,13 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function translateToNorwegian(text) {
-  const translations = {
-    "municipality": "kommune"
-  };
-
-  return text.split(' ').map(word => translations[word.toLowerCase()] || word).join(' ');
-}
 
 function getCoordinates(city) {
     const url = `/.netlify/functions/fetchWeather?type=coordinates&query=${encodeURIComponent(city)}`;
@@ -67,45 +60,58 @@ function formatCityName(cityName) {
     return cityName.charAt(0).toUpperCase() + cityName.slice(1).toLowerCase();
 }
 
-function reverseGeocode(lat, lon) {
+function translateToNorwegian(text) {
+    const translations = {
+      "municipality": "kommune"
+    };
+  
+    return text.split(' ').map(word => translations[word.toLowerCase()] || word).join(' ');
+  }
+  
+  function reverseGeocode(lat, lon) {
     const url = `/.netlify/functions/fetchWeather?type=reverseGeocode&query=${lat},${lon}`;
-
+  
     fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);  // Log the data to see what Google is returning
-            if (data.status === "OK" && data.results.length > 0) {
-                let cityInfo = data.results.find(result => 
-                    result.types.includes('locality') || 
-                    result.types.includes('sublocality') || 
-                    result.types.includes('administrative_area_level_3') || 
-                    result.types.includes('political')
-                );
-
-                let cityName;
-                if (cityInfo) {
-                    cityName = cityInfo.address_components.find(comp => 
-                        comp.types.includes('locality') || 
-                        comp.types.includes('sublocality') || 
-                        comp.types.includes('administrative_area_level_3') || 
-                        comp.types.includes('political')
-                    );
-                    cityName = cityName ? formatCityName(cityName.long_name) : cityInfo.formatted_address;
-                } else {
-                    cityName = 'Unknown location';
-                }
-
-                document.getElementById('location').textContent = cityName;
-            } else {
-                console.error('Unable to find the city name, API status:', data.status);
-                document.getElementById('location').textContent = 'Unknown location'; // Fallback text
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching city name:', error);
-            document.getElementById('location').textContent = 'Error determining location';
-        });
-}
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);  // Log the data to see what Google is returning
+        if (data.status === "OK" && data.results.length > 0) {
+          let cityInfo = data.results.find(result => 
+            result.types.includes('locality') || 
+            result.types.includes('sublocality') || 
+            result.types.includes('administrative_area_level_3') || 
+            result.types.includes('political')
+          );
+  
+          let cityName;
+          if (cityInfo) {
+            cityName = cityInfo.address_components.find(comp => 
+              comp.types.includes('locality') || 
+              comp.types.includes('sublocality') || 
+              comp.types.includes('administrative_area_level_3') || 
+              comp.types.includes('political')
+            );
+            cityName = cityName ? translateToNorwegian(formatCityName(cityName.long_name)) : translateToNorwegian(formatCityName(cityInfo.formatted_address));
+          } else {
+            cityName = 'Unknown location';
+          }
+  
+          document.getElementById('location').textContent = cityName;
+        } else {
+          console.error('Unable to find the city name, API status:', data.status);
+          document.getElementById('location').textContent = 'Unknown location'; // Fallback text
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching city name:', error);
+        document.getElementById('location').textContent = 'Error determining location';
+      });
+  }
+  
+  function formatCityName(cityName) {
+    cityName = cityName.replace('Tromso', 'Tromsø').replace('Alesund', 'Ålesund');
+    return cityName.charAt(0).toUpperCase() + cityName.slice(1).toLowerCase();
+  }  
 
 
 
