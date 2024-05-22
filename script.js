@@ -357,9 +357,8 @@ function displayFourDayForecast(data) {
             const day = forecastTime.toLocaleDateString('no-NO', { weekday: 'long' });
             const capitalizedDay = day.charAt(0).toUpperCase() + day.slice(1);
 
-            if (hour >= 12 && hour <= 18) {
+            if (hour === 12) { // Only take the forecast at 12 PM
                 if (!dayData.has(capitalizedDay)) {
-                    // Check for symbol code in 'next_6_hours', if not available then 'next_12_hours', else default
                     const symbolCode = forecast.data.next_6_hours?.summary.symbol_code ||
                         forecast.data.next_12_hours?.summary.symbol_code ||
                         forecast.data.next_1_hours?.summary.symbol_code ||
@@ -379,7 +378,7 @@ function displayFourDayForecast(data) {
                 daily.windSpeed.push(forecast.data.instant.details.wind_speed);
                 daily.cloudAreaFraction.push(forecast.data.instant.details.cloud_area_fraction);
                 if (forecast.data.next_6_hours?.details) {
-                daily.precipitation += forecast.data.next_6_hours.details.precipitation_amount;
+                    daily.precipitation += forecast.data.next_6_hours.details.precipitation_amount;
                 }
             }
         }
