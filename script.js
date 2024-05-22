@@ -31,16 +31,11 @@ function getCoordinates(city) {
     fetch(url)
         .then(response => response.json())
         .then(data => {
-            console.log(data);  // Log the data to see what Google is returning
             if (data.status === "OK" && data.results.length > 0) {
                 const { lat, lng } = data.results[0].geometry.location;
                 initializeWeather(lat, lng);
                 let formattedCity = formatCityName(data.results[0].formatted_address.split(',')[0]);
-                
-                console.log('Before translation:', formattedCity);
                 formattedCity = translateToNorwegian(formattedCity);
-                console.log('After translation:', formattedCity);
-                
                 document.getElementById('location').textContent = formattedCity;
             } else {
                 console.error('No location found for:', city);
