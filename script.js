@@ -386,32 +386,29 @@ function displayFourDayForecast(data) {
 
     // Display each day's forecast
     dayData.forEach((value, key) => {
-        if (key !== today.toLocaleDateString('no-NO', { weekday: 'long' })) {
-            const avgTemp = Math.round(value.temperature.reduce((a, b) => a + b, 0) / value.temperature.length);
-            const avgHumidity = Math.round(value.humidity.reduce((a, b) => a + b, 0) / value.humidity.length);
-            const avgWindSpeed = Math.round(value.windSpeed.reduce((a, b) => a + b, 0) / value.windSpeed.length);
-            const avgCloudArea = Math.round(value.cloudAreaFraction.reduce((a, b) => a + b, 0) / value.cloudAreaFraction.length);
+        const avgTemp = Math.round(value.temperature.reduce((a, b) => a + b, 0) / value.temperature.length);
+        const avgHumidity = Math.round(value.humidity.reduce((a, b) => a + b, 0) / value.humidity.length);
+        const avgWindSpeed = Math.round(value.windSpeed.reduce((a, b) => a + b, 0) / value.windSpeed.length);
+        const avgCloudArea = Math.round(value.cloudAreaFraction.reduce((a, b) => a + b, 0) / value.cloudAreaFraction.length);
 
-            const row = `
-                <tr class="forecast-row" data-forecast='${JSON.stringify(value)}'>
-                    <td>${key}</td>
-                    <td>${avgTemp}°</td>
-                    <td>${Math.round(value.precipitation)} mm</td>
-                    <td><img src="img/${value.symbolCode}.png" class="weather-icon" alt="Weather Icon"></td>
-                </tr>
-                <tr class="details" style="display: none;">
-                    <td colspan="4">
-                        <p class="day-text"><i class="bi bi-droplet"></i> Luftfuktighet: ${avgHumidity}%</p>
-                        <p class="day-text"><i class="bi bi-wind"></i> Vind: ${avgWindSpeed} m/s</p>
-                        <p class="day-text"><i class="bi bi-cloud"></i> Skylag: ${avgCloudArea}%</p>
-                    </td>
-                </tr>
-            `;
-            forecastBody.insertAdjacentHTML('beforeend', row);
-        }
+        const row = `
+            <tr class="forecast-row" data-forecast='${JSON.stringify(value)}'>
+                <td>${key}</td>
+                <td>${avgTemp}°</td>
+                <td>${Math.round(value.precipitation)} mm</td>
+                <td><img src="img/${value.symbolCode}.png" class="weather-icon" alt="Weather Icon"></td>
+            </tr>
+            <tr class="details" style="display: none;">
+                <td colspan="4">
+                    <p class="day-text"><i class="bi bi-droplet"></i> Luftfuktighet: ${avgHumidity}%</p>
+                    <p class="day-text"><i class="bi bi-wind"></i> Vind: ${avgWindSpeed} m/s</p>
+                    <p class="day-text"><i class="bi bi-cloud"></i> Skylag: ${avgCloudArea}%</p>
+                </td>
+            </tr>
+        `;
+        forecastBody.insertAdjacentHTML('beforeend', row);
     });
 
-    // Attach event listeners after the forecast table is built
     attachRowClickListeners();
 }
 
