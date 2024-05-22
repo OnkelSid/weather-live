@@ -25,6 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function translateToNorwegian(text) {
+  const translations = {
+    "municipality": "kommune"
+  };
+
+  return text.split(' ').map(word => translations[word.toLowerCase()] || word).join(' ');
+}
+
 function getCoordinates(city) {
     const url = `/.netlify/functions/fetchWeather?type=coordinates&query=${encodeURIComponent(city)}`;
 
