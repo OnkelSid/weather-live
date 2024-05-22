@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-
 function getCoordinates(city) {
     const url = `/.netlify/functions/fetchWeather?type=coordinates&query=${encodeURIComponent(city)}`;
 
@@ -45,14 +44,11 @@ function getCoordinates(city) {
         .catch(error => console.error('Error fetching location coordinates:', error));
 }
 
-
-
 function updateUIForNoData(cityName) {
     document.getElementById('location').textContent = 'Unknown location';
     // Potentially clear other UI elements related to weather data here
     console.error('No data available for city:', cityName);
 }
-
 
 function formatCityName(cityName) {
     // Replaces common incorrect character mappings
@@ -62,68 +58,65 @@ function formatCityName(cityName) {
 
 function translateToNorwegian(text) {
     const translations = {
-      "municipality": "kommune"
+        "municipality": "kommune"
     };
-  
-    return text.split(' ').map(word => translations[word.toLowerCase()] || word).join(' ');
-  }
-  
-  function reverseGeocode(lat, lon) {
+
+    Object.keys(translations).forEach(key => {
+        const regex = new RegExp(`\\b${key}\\b`, 'gi');
+        text = text.replace(regex, translations[key]);
+    });
+
+    return text;
+}
+
+function reverseGeocode(lat, lon) {
     const url = `/.netlify/functions/fetchWeather?type=reverseGeocode&query=${lat},${lon}`;
-  
+
     fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);  // Log the data to see what Google is returning
-        if (data.status === "OK" && data.results.length > 0) {
-          let cityInfo = data.results.find(result => 
-            result.types.includes('locality') || 
-            result.types.includes('sublocality') || 
-            result.types.includes('administrative_area_level_3') || 
-            result.types.includes('political')
-          );
-  
-          let cityName;
-          if (cityInfo) {
-            cityName = cityInfo.address_components.find(comp => 
-              comp.types.includes('locality') || 
-              comp.types.includes('sublocality') || 
-              comp.types.includes('administrative_area_level_3') || 
-              comp.types.includes('political')
-            );
-            cityName = cityName ? translateToNorwegian(formatCityName(cityName.long_name)) : translateToNorwegian(formatCityName(cityInfo.formatted_address));
-          } else {
-            cityName = 'Unknown location';
-          }
-  
-          document.getElementById('location').textContent = cityName;
-        } else {
-          console.error('Unable to find the city name, API status:', data.status);
-          document.getElementById('location').textContent = 'Unknown location'; // Fallback text
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching city name:', error);
-        document.getElementById('location').textContent = 'Error determining location';
-      });
-  }
-  
-  function formatCityName(cityName) {
-    cityName = cityName.replace('Tromso', 'Tromsø').replace('Alesund', 'Ålesund');
-    return cityName.charAt(0).toUpperCase() + cityName.slice(1).toLowerCase();
-  }  
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);  // Log the data to see what Google is returning
+            if (data.status === "OK" && data.results.length > 0) {
+                let cityInfo = data.results.find(result => 
+                    result.types.includes('locality') || 
+                    result.types.includes('sublocality') || 
+                    result.types.includes('administrative_area_level_3') || 
+                    result.types.includes('political')
+                );
 
+                let cityName;
+                if (cityInfo) {
+                    cityName = cityInfo.address_components.find(comp => 
+                        comp.types.includes('locality') || 
+                        comp.types.includes('sublocality') || 
+                        comp.types.includes('administrative_area_level_3') || 
+                        comp.types.includes('political')
+                    );
+                    cityName = cityName ? formatCityName(cityName.long_name) : formatCityName(cityInfo.formatted_address);
+                    cityName = translateToNorwegian(cityName);
+                } else {
+                    cityName = 'Unknown location';
+                }
 
+                document.getElementById('location').textContent = cityName;
+            } else {
+                console.error('Unable to find the city name, API status:', data.status);
+                document.getElementById('location').textContent = 'Unknown location'; // Fallback text
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching city name:', error);
+            document.getElementById('location').textContent = 'Error determining location';
+        });
+}
 
 // iframe script
 window.addEventListener('message', event => {
     if (event.origin !== 'your-parent-domain') return;
-  
+
     const { lat, lon } = event.data;
     initializeWeather(lat, lon);
-  });
-
-
+});
 
 function initializeWeather(lat, lon) {
     getWeatherData(lat, lon);
@@ -181,8 +174,6 @@ function getWeatherData(lat, lon) {
     });
 }
 
-
-
 function getSunriseSunset(lat, lon) {
     const times = SunCalc.getTimes(new Date(), lat, lon);
     const sunrise = times.sunrise;
@@ -200,9 +191,6 @@ function getSunriseSunset(lat, lon) {
         document.getElementById('sunset-time').textContent = formattedSunset;
     }
 }
-
-
-
 
 let forecastChart; // This will hold the chart instance
 
@@ -280,7 +268,6 @@ window.addEventListener('focus', () => {
     }
 });
 
-
 function updateHourlyForecastCards(lat, lon) {
     const url = `/.netlify/functions/fetchWeather?type=weather&query=${lat},${lon}`;
     fetch(url, {
@@ -339,17 +326,6 @@ function displayHourlyForecastCards(data) {
         `;
         cardContainer.insertAdjacentHTML('beforeend', cardHTML);
     });
-}
-
-
-function updateFourDayForecast(lat, lon) {
-    const url = `/.netlify/functions/fetchWeather?type=weather&query=${lat},${lon}`;
-    fetch(url, {
-        headers: { 'User-Agent': 'BullsApp/0.1 preben@bulls.no' }
-    })
-        .then(response => response.json())
-        .then(data => displayFourDayForecast(data))
-        .catch(error => console.error('Error fetching four-day forecast data:', error));
 }
 
 function updateFourDayForecast(lat, lon) {
@@ -451,7 +427,6 @@ function toggleDetails(event) {
     const detailsRow = event.currentTarget.nextElementSibling;
     detailsRow.style.display = detailsRow.style.display === 'none' || detailsRow.style.display === '' ? 'table-row' : 'none';
 }
-
 
 function showError(error) {
     console.error('Geolocation error:', error.message);
