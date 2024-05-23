@@ -308,7 +308,7 @@ function displayHourlyForecastCards(data) {
         const symbolCode = forecast.data[period].summary.symbol_code;
         const temperature = Math.round(forecast.data.instant.details.air_temperature);
         const windSpeedData = Math.round(forecast.data.instant.details.wind_speed);
-        const precipitation = (forecast.data.next_6_hours?.details.precipitation_amount || forecast.data.next_1_hours?.details.precipitation_amount) || 0;
+        const precipitation = (forecast.data.next_1_hours?.details.precipitation_amount || forecast.data.next_1_hours?.details.precipitation_amount) || 0;
 
         const cardHTML = `
             <div class="col">
