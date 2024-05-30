@@ -318,7 +318,7 @@ function displayHourlyForecastCards(data) {
                         <img src="img/${symbolCode}.png" class="weather-icon" id="icon-card" alt="Weather Icon">
                         <p class="card-text" id="temp-card">${temperature}°</p>
                         <div style="display: flex; justify-content: space-between;">
-                            <p class="card-text"><i class="bi bi-cloud-drizzle"></i> ${Math.round(precipitation)} mm</p>
+                        <p class="card-text"><i class="bi bi-cloud-drizzle"></i> ${precipitation.toFixed(1)} mm</p>
                             <p class="card-text" style="margin-left: 10px;"><i class="bi bi-wind"></i> ${windSpeedData} m/s</p>
                         </div>
                     </div>
