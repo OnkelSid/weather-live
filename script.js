@@ -395,7 +395,7 @@ function displayFourDayForecast(data) {
             <tr class="forecast-row" data-forecast='${JSON.stringify(value)}'>
                 <td>${key}</td>
                 <td>${avgTemp}°</td>
-                <td>${Math.round(value.precipitation)} mm</td>
+                <td>${value.precipitation.toFixed(1)} mm</td>
                 <td><img src="img/${value.symbolCode}.png" class="weather-icon" alt="Weather Icon"></td>
             </tr>
             <tr class="details" style="display: none;">
