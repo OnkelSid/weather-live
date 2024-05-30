@@ -159,7 +159,7 @@ function getWeatherData(lat, lon) {
             const relativeHumidity = Math.round(closestForecast.data.instant.details.relative_humidity);
             const cloudAreaFraction = Math.round(closestForecast.data.instant.details.cloud_area_fraction);
 
-            document.getElementById('temperature').textContent = `${temperature}°C`;
+            document.getElementById('temperature').textContent = `${temperature}°`;
             document.getElementById('weather-description').innerHTML = `<img src="img/${details}.png" class="weather-icon" alt="Weather Icon">`;
             document.getElementById('wind-speed').textContent = `${windSpeed} m/s`;
             document.getElementById('humidity').textContent = `${relativeHumidity}%`;
