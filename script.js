@@ -353,10 +353,10 @@ function displayFourDayForecast(data) {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     const timeSlots = [
-        { start: 0, end: 6 },
-        { start: 6, end: 12 },
-        { start: 12, end: 18 },
-        { start: 18, end: 24 }
+        { start: 2, end: 8 },
+        { start: 8, end: 14 },
+        { start: 14, end: 20 },
+        { start: 20, end: 2 }
     ];
 
     data.properties.timeseries.forEach(forecast => {
