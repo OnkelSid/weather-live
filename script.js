@@ -414,7 +414,7 @@ function displayFourDayForecast(data) {
                     return `<td class="${hideSlot ? 'hidden-slot' : ''}">
                         ${hideSlot ? '' : `
                             <div><img src="img/${slotData.symbolCode}.png" class="weather-icon" alt="Weather Icon"></div>
-                            <div>${avgTemp}°C</div>
+                            <div>${avgTemp}°</div>
                             <div style="display: none;" class="expanded-details">
                                 <div>${avgWindSpeed} m/s</div>
                                 <div>${slotData.precipitation.toFixed(1)} mm</div>
