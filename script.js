@@ -294,12 +294,12 @@ function displayHourlyForecastCards(data) {
     // Start from the same adjusted hour as the chart
     const startTime = new Date();
     startTime.setHours(startTime.getHours() + 3, 0, 0, 0); // Start 3 hours from now, rounding to the next full hour
-    const endTime = new Date(startTime);
-    endTime.setHours(endTime.getHours() + 24); // 24 hours from start time
+    lastHourlyForecastEndTime = new Date(startTime);
+    lastHourlyForecastEndTime.setHours(lastHourlyForecastEndTime.getHours() + 24); // 24 hours from start time
 
     const forecasts = data.properties.timeseries.filter(forecast => {
         const forecastTime = new Date(forecast.time);
-        return forecastTime >= startTime && forecastTime <= endTime && ((forecastTime.getHours() - startTime.getHours()) % 3 === 0);
+        return forecastTime >= startTime && forecastTime <= lastHourlyForecastEndTime && ((forecastTime.getHours() - startTime.getHours()) % 3 === 0);
     }).slice(0, 8); // Limit to the next 8 valid entries for consistency
 
     forecasts.forEach(forecast => {
@@ -308,7 +308,7 @@ function displayHourlyForecastCards(data) {
         const symbolCode = forecast.data[period].summary.symbol_code;
         const temperature = Math.round(forecast.data.instant.details.air_temperature);
         const windSpeedData = Math.round(forecast.data.instant.details.wind_speed);
-        const precipitation = (forecast.data.next_1_hours?.details.precipitation_amount || forecast.data.next_1_hours?.details.precipitation_amount) || 0;
+        const precipitation = (forecast.data.next_6_hours?.details.precipitation_amount || forecast.data.next_1_hours?.details.precipitation_amount) || 0;
 
         const cardHTML = `
             <div class="col">
@@ -318,7 +318,7 @@ function displayHourlyForecastCards(data) {
                         <img src="img/${symbolCode}.png" class="weather-icon" id="icon-card" alt="Weather Icon">
                         <p class="card-text" id="temp-card">${temperature}°</p>
                         <div style="display: flex; justify-content: space-between;">
-                        <p class="card-text"><i class="bi bi-cloud-drizzle"></i> ${precipitation.toFixed(1)} mm</p>
+                            <p class="card-text"><i class="bi bi-cloud-drizzle"></i> ${Math.round(precipitation)} mm</p>
                             <p class="card-text" style="margin-left: 10px;"><i class="bi bi-wind"></i> ${windSpeedData} m/s</p>
                         </div>
                     </div>
@@ -327,6 +327,9 @@ function displayHourlyForecastCards(data) {
         `;
         cardContainer.insertAdjacentHTML('beforeend', cardHTML);
     });
+
+    // Update the global variable to reflect the end time of the last hourly forecast
+    lastHourlyForecastEndTime = forecasts.length > 0 ? new Date(forecasts[forecasts.length - 1].time) : lastHourlyForecastEndTime;
 }
 
 function updateFourDayForecast(lat, lon) {
@@ -342,73 +345,89 @@ function updateFourDayForecast(lat, lon) {
 function displayFourDayForecast(data) {
     const forecastBody = document.getElementById('daily-forecast-body');
     forecastBody.innerHTML = '';
-    let dayData = new Map();
+    let dayData = {};
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
+    const timeSlots = [
+        { start: 0, end: 6 },
+        { start: 6, end: 12 },
+        { start: 12, end: 18 },
+        { start: 18, end: 24 }
+    ];
+
     data.properties.timeseries.forEach(forecast => {
         const forecastTime = new Date(forecast.time);
-
         if (forecastTime >= tomorrow) {
-            const hour = forecastTime.getHours();
             const day = forecastTime.toLocaleDateString('no-NO', { weekday: 'long' });
             const capitalizedDay = day.charAt(0).toUpperCase() + day.slice(1);
+            const hour = forecastTime.getHours();
 
-            if (hour >= 12 && hour < 18) { // Consider forecasts from 12 PM to 5 PM
-                if (!dayData.has(capitalizedDay)) {
-                    const symbolCode = forecast.data.next_6_hours?.summary.symbol_code ||
-                        forecast.data.next_12_hours?.summary.symbol_code ||
-                        forecast.data.next_1_hours?.summary.symbol_code ||
-                        'default';
-                    dayData.set(capitalizedDay, {
-                        temperature: [],
+            if (!dayData[capitalizedDay]) {
+                dayData[capitalizedDay] = {};
+                timeSlots.forEach(slot => {
+                    dayData[capitalizedDay][`${slot.start}-${slot.end}`] = {
+                        temperatures: [],
                         precipitation: 0,
-                        symbolCode: symbolCode,
-                        humidity: [],
-                        windSpeed: [],
-                        cloudAreaFraction: []
-                    });
-                }
-                let daily = dayData.get(capitalizedDay);
-                daily.temperature.push(forecast.data.instant.details.air_temperature);
-                daily.humidity.push(forecast.data.instant.details.relative_humidity);
-                daily.windSpeed.push(forecast.data.instant.details.wind_speed);
-                daily.cloudAreaFraction.push(forecast.data.instant.details.cloud_area_fraction);
-                if (forecast.data.next_6_hours?.details) {
-                    daily.precipitation += forecast.data.next_6_hours.details.precipitation_amount;
-                }
+                        symbolCode: 'default',
+                        windSpeeds: []
+                    };
+                });
             }
+
+            timeSlots.forEach(slot => {
+                if (hour >= slot.start && hour < slot.end) {
+                    const slotData = dayData[capitalizedDay][`${slot.start}-${slot.end}`];
+                    const next6Hours = forecast.data.next_6_hours;
+                    const instantDetails = forecast.data.instant.details;
+
+                    if (next6Hours) {
+                        slotData.symbolCode = next6Hours.summary.symbol_code || 'default';
+                        slotData.precipitation += next6Hours.details.precipitation_amount || 0;
+                    }
+
+                    if (instantDetails.air_temperature !== undefined) {
+                        slotData.temperatures.push(instantDetails.air_temperature);
+                    }
+
+                    if (instantDetails.wind_speed !== undefined) {
+                        slotData.windSpeeds.push(instantDetails.wind_speed);
+                    }
+                }
+            });
         }
     });
 
-    // Display each day's forecast
-    dayData.forEach((value, key) => {
-        const avgTemp = Math.round(value.temperature.reduce((a, b) => a + b, 0) / value.temperature.length);
-        const avgHumidity = Math.round(value.humidity.reduce((a, b) => a + b, 0) / value.humidity.length);
-        const avgWindSpeed = Math.round(value.windSpeed.reduce((a, b) => a + b, 0) / value.windSpeed.length);
-        const avgCloudArea = Math.round(value.cloudAreaFraction.reduce((a, b) => a + b, 0) / value.cloudAreaFraction.length);
-
+    Object.keys(dayData).forEach((day, index) => {
         const row = `
-            <tr class="forecast-row" data-forecast='${JSON.stringify(value)}'>
-                <td>${key}</td>
-                <td>${avgTemp}°</td>
-                <td>${value.precipitation.toFixed(1)} mm</td>
-                <td><img src="img/${value.symbolCode}.png" class="weather-icon" alt="Weather Icon"></td>
-            </tr>
-            <tr class="details" style="display: none;">
-                <td colspan="4">
-                    <p class="day-text"><i class="bi bi-droplet"></i> Luftfuktighet: ${avgHumidity}%</p>
-                    <p class="day-text"><i class="bi bi-wind"></i> Vind: ${avgWindSpeed} m/s</p>
-                    <p class="day-text"><i class="bi bi-cloud"></i> Skylag: ${avgCloudArea}%</p>
-                </td>
+            <tr class="forecast-row" data-day="${day}">
+                <td>${day}</td>
+                ${timeSlots.map(slot => {
+                    const slotKey = `${slot.start}-${slot.end}`;
+                    const slotData = dayData[day][slotKey];
+                    const avgTemp = slotData.temperatures.length ? (slotData.temperatures.reduce((a, b) => a + b, 0) / slotData.temperatures.length).toFixed(1) : 'N/A';
+                    const avgWindSpeed = slotData.windSpeeds.length ? (slotData.windSpeeds.reduce((a, b) => a + b, 0) / slotData.windSpeeds.length).toFixed(1) : 'N/A';
+                    const hideSlot = index === 0 && (new Date(tomorrow).setHours(slot.end) <= lastHourlyForecastEndTime.getTime());
+                    return `<td class="${hideSlot ? 'hidden-slot' : ''}">
+                        ${hideSlot ? '' : `
+                            <div><img src="img/${slotData.symbolCode}.png" class="weather-icon" alt="Weather Icon"></div>
+                            <div>${avgTemp}°C</div>
+                            <div style="display: none;" class="expanded-details">
+                                <div>${avgWindSpeed} m/s</div>
+                                <div>${slotData.precipitation.toFixed(1)} mm</div>
+                            </div>
+                        `}
+                    </td>`;
+                }).join('')}
             </tr>
         `;
         forecastBody.insertAdjacentHTML('beforeend', row);
     });
 
+    // Attach event listeners after the forecast table is built
     attachRowClickListeners();
 }
 
@@ -421,9 +440,14 @@ function attachRowClickListeners() {
 }
 
 function toggleDetails(event) {
-    const detailsRow = event.currentTarget.nextElementSibling;
-    detailsRow.style.display = detailsRow.style.display === 'none' || detailsRow.style.display === '' ? 'table-row' : 'none';
+    const expandedDetails = event.currentTarget.querySelectorAll('.expanded-details');
+    expandedDetails.forEach(detail => {
+        detail.style.display = detail.style.display === 'none' || detail.style.display === '' ? 'block' : 'none';
+    });
 }
+
+// Usage
+updateHourlyForecastCards(59.91, 10.75); // Example coordinates for Oslo, Norway
 
 function showError(error) {
     console.error('Geolocation error:', error.message);
